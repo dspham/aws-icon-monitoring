@@ -1,1 +1,1 @@
-aws_allowed_account_ids = ["123456789012"]
+aws_allowed_account_ids = ["511112857190"]

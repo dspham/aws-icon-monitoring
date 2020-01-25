@@ -10,7 +10,7 @@ network_name: testnet  # You must fill this in
 # These can change to your liking
 namespace: icon
 environment: prod
-owner: insight
+owner: insight-dspham
 
 # Need to specify 3 availablilty zones here and also the region in region.tfvars
 azs:
