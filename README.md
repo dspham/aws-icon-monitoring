@@ -4,12 +4,13 @@
 
 This is the second iteration of an automated deployment for running nodes and supporting infrastructure on the ICON Blockchain. 
 
-## To Use 
-
+### To Use 
+---
 1. ##### Export AWS keys to environment variables or profile 
 	- Visit [this link](https://www.notion.so/insightbxplanning/AWS-Keys-Tutorial-175fa12e9b5b43509235a97fca275653) for more information 
 2. ##### Install prerequisites 
 	- [Check this section](#prerequisites)
+	- `make install-deps-ubuntu` or `make install-deps-mac` 
 3. ##### Pull in dependencies 
     - `make clone-all`
 4. ##### Make sure you have ssh keys
@@ -26,7 +27,7 @@ This is the second iteration of an automated deployment for running nodes and su
         - Change `config.yaml.examle` to `config.yaml` and fill out choices 
         - Run `make configs-from-config`
     - **Options #3** - Fill out lower level configs manually 
-        - There are five files 
+        - There are five files generated from above options. Create them per above then edit manually. 
             - `global.yaml`
                 - Information about network and general setup  
             - `secrets.yaml`
@@ -40,9 +41,9 @@ This is the second iteration of an automated deployment for running nodes and su
 	> ##### Make sure you choose the right network!
 6. ##### Register node
 	- You will need to regster the node.  Check the official docs 
-	- Follow [this readme](icon/register/README.md) and fill in the appropriate information 
+	- Fill out the config file `registration.yaml` appropriately 
 	- `make eip-register` 
-	- Copy output and run in shell 
+	- Copy the output "registration command" and run in shell. Command begins with preptools...
 	- This is a one time process for most people 
 	
 7. ##### Deploy node
