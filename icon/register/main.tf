@@ -13,7 +13,8 @@ locals {
 }
 
 resource "aws_eip" "this" {
-  count = var.ip == null ? 1 : 0
+  count = 1 
+  
   vpc = true
   tags = local.tags
 
@@ -73,52 +74,52 @@ resource "aws_s3_bucket_object" "logo_svg" {
   key = basename(var.logo_svg)
   source = var.logo_svg
 }
-data "template_file" "details" {
-  template = file("${path.module}/details.json")
-  vars = {
-    logo_256 = "http://${aws_s3_bucket.bucket.website_endpoint}/${basename(var.logo_256)}"
-    logo_1024 = "http://${aws_s3_bucket.bucket.website_endpoint}/${basename(var.logo_1024)}"
-    logo_svg = "http://${aws_s3_bucket.bucket.website_endpoint}/${basename(var.logo_svg)}"
+# data "template_file" "details" {
+#   template = file("${path.module}/details.json")
+#   vars = {
+#     logo_256 = "http://${aws_s3_bucket.bucket.website_endpoint}/${basename(var.logo_256)}"
+#     logo_1024 = "http://${aws_s3_bucket.bucket.website_endpoint}/${basename(var.logo_1024)}"
+#     logo_svg = "http://${aws_s3_bucket.bucket.website_endpoint}/${basename(var.logo_svg)}"
 
-    steemit = var.steemit
-    twitter = var.twitter
-    youtube = var.youtube
-    facebook = var.facebook
-    github = var.github
-    reddit = var.reddit
-    keybase = var.keybase
-    telegram = var.telegram
-    wechat = var.wechat
+#     steemit = var.steemit
+#     twitter = var.twitter
+#     youtube = var.youtube
+#     facebook = var.facebook
+#     github = var.github
+#     reddit = var.reddit
+#     keybase = var.keybase
+#     telegram = var.telegram
+#     wechat = var.wechat
 
-    country = var.organization_country
-    region = var.organization_city
-    server_type = var.server_type
+#     country = var.organization_country
+#     region = var.organization_city
+#     server_type = var.server_type
 
-    ip = local.ip
-  }
-}
+#     ip = local.ip
+#   }
+# }
 
-data "template_file" "registration" {
-  template = file("${path.module}/registerPRep.json")
-  vars = {
-    name = var.organization_name
-    country = var.organization_country
-    city = var.organization_city
-    email = var.organization_email
-    website = var.organization_website
+# data "template_file" "registration" {
+#   template = file("${path.module}/registerPRep.json")
+#   vars = {
+#     name = var.organization_name
+#     country = var.organization_country
+#     city = var.organization_city
+#     email = var.organization_email
+#     website = var.organization_website
 
-    details_endpoint = "http://${aws_s3_bucket.bucket.website_endpoint}/details.json"
+#     details_endpoint = "http://${aws_s3_bucket.bucket.website_endpoint}/details.json"
 
-    ip = local.ip
-  }
-  depends_on = [aws_s3_bucket.bucket]
-}
+#     ip = local.ip
+#   }
+#   depends_on = [aws_s3_bucket.bucket]
+# }
 
-resource "aws_s3_bucket_object" "details" {
-  bucket = aws_s3_bucket.bucket.bucket
-  key    = "details.json"
-  content = data.template_file.details.rendered
-}
+# resource "aws_s3_bucket_object" "details" {
+#   bucket = aws_s3_bucket.bucket.bucket
+#   key    = "details.json"
+#   content = data.template_file.details.rendered
+# }
 
 //resource "null_resource" "registration" {
 //  provisioner "local-exec" {
