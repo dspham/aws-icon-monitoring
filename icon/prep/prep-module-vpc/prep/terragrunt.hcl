@@ -40,10 +40,12 @@ inputs = {
   eip_id = dependency.data.outputs.eip_id
   main_ip = dependency.data.outputs.public_ip
 
+  prometheus_enabled = true
+
 //  ebs_volume_size = 150
 //  root_volume_size = 25
 //  instance_type = "t3.large"
-
+ 
   instance_type = local.nodes["${local.name}"].instance_type
   ebs_volume_size = local.nodes["${local.name}"].ebs_volume_size
   root_volume_size = local.nodes["${local.name}"].root_volume_size
