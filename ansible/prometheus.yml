@@ -91,17 +91,3 @@ scrape_configs:
   #    - targets: ['localhost:80']
 
   # sg-0b516a4a2ff12207a
-
-
-  
-        # - targets: ['ip-10-0-192-98.ec2.internal:9093' ]
-  #       - targets: ip-10-0-192-98.ec2.internal:9093
-      # - targets: ['34.237.151.53:9093']
-    # ec2_sd_config:
-    #   - region: us-east-1
-    #     access_key: 'AKIAXOAFTIZTHSINIQUZ'
-    #     secret_key: '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'
-    #     port: 9093
-  # - job_name: 'grafana'
-  #    static_configs:
-  #    - targets: ['34.237.151.53:3000']
