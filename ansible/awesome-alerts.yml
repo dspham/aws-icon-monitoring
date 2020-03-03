@@ -136,3 +136,39 @@ groups:
     annotations:
       summary: "High CPU load (instance {{ $labels.instance }})"
       description: "CPU load is > 80%\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+    # Swap is filling up (>80%)
+  - alert: SwapIsFillingUp
+    expr: (1 - (node_memory_SwapFree_bytes / node_memory_SwapTotal_bytes)) * 100 > 80
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Swap is filling up (instance {{ $labels.instance }})"
+      description: "Swap is filling up (>80%)\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+    # SystemD service crashed
+  - alert: SystemdServiceCrashed
+    expr: node_systemd_unit_state{state="failed"} == 1
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "SystemD service crashed (instance {{ $labels.instance }})"
+      description: "SystemD service crashed\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+    # Physical hardware component too hot
+  - alert: PhysicalComponentTooHot
+    expr: node_hwmon_temp_celsius > 75
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Physical component too hot (instance {{ $labels.instance }})"
+      description: "Physical hardware component too hot\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+    # Physical node temperature alarm triggered
+  - alert: NodeOvertemperatureAlarm
+    expr: node_hwmon_temp_alarm == 1
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Node overtemperature alarm (instance {{ $labels.instance }})"
+      description: "Physical node temperature alarm triggered\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
