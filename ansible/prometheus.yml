@@ -1,130 +1,107 @@
+#
+# Ansible managed
+#
+# http://prometheus.io/docs/operating/configuration/
+
 global:
-  resolve_timeout: 5m
-  smtp_smarthost: 'localhost: 25'
-  smtp_from: 'prometheus'
+  evaluation_interval: 15s    # Evaluate rules every 15 seconds. The default is every 1 minute.
+  scrape_interval: 15s    # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+  scrape_timeout: 10s
+
+  external_labels:
+    environment: ip-10-0-192-98.ec2.internal
+
+### alertmanager configuration
+alerting:
+  alertmanagers:
+  - static_configs:
+    - targets:
+      - 34.237.151.53:9093
+      # - ip-10-0-192-98.ec2.internal:9093
+      # - 54.227.162.130:9093
 
 
-# templates:
-# - '/etc/alertmanager/templates/*.tmpl'
-# receivers:
-# - name: slack
-#   slack_configs:
-#   - api_url: https://hooks.slack.com/services/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
-#     channel: '#general'
-#     send_resolved: true
-
-route:
-  # group_by: ['alertname', 'cluster', 'service']
-  group_by: ['slack']
-  group_wait: 10s
-  group_interval: 10s
-  repeat_interval: 30m
-  receiver: 'slack'
-  routes:
-    - match:
-        # severity: page
-        team: devops
-      # group_by: ['team']
-      # receiver: 'slack'
-      # routes:
-      #   - match:
-      #       team: devops
-      #     receiver: 'slack'
-
-  ### Send all notifications to me.
-  # receiver: email-me
-          
-receivers:
-- name: 'slack'
-  slack_configs:
-  - api_url: https://hooks.slack.com/services/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
-    channel: "#testchannel"
-    text: "Overview: {{ .CommonAnnotations.overview }}"
-# - name: 'slack'
-#   webhook_configs:
-#   - url: http://34.237.151.53:9165/alert
-#     send_resolved: true
-# - name: 'alertmananger-bot'
-#   webhook_configs:
-#   - url: http://0.0.0.0:8080
-#     send_resolved: true
-# - name: 'team-sms'
-#   webhook_configs:
-#     - url: 'http://localhost:9876/alert'
+# alerting:
+#   alertmanagers:
+#   - scheme: http
+#     # path_prefix: /alertmanager
+#     path_prefix: /#
+#     tls_config:
+#       insecure_skip_verify: true
+#     static_configs:
+#     - targets:
+#       - 54.227.162.130:9093
 
 
+rule_files:
+  - /etc/prometheus/rules/*.rules
+  - /etc/prometheus/rules/rules-alert.yml
+  - /etc/prometheus/rules/awesome-alerts.yml
 
 
+scrape_configs:
+  - job_name: prometheus
+    metrics_path: /metrics
+    static_configs:
+    - targets:
+      - ip-10-0-192-98.ec2.internal:9090
+  - file_sd_configs:
+    - files:
+      - /etc/prometheus/file_sd/node.yml
+    job_name: node
+  - job_name: 'alertmanager'
+    # metrics_path: /alerts
+    static_configs:
+      - targets: 
+        # - ip-10-0-192-98.ec2.internal:9093
+        - 34.237.151.53:9093
+  - job_name: 'grafana'
+    static_configs:
+      - targets: 
+        - ip-10-0-192-98.ec2.internal:3000
+  - job_name: 'node_exporter'
+    static_configs:
+    # - targets: ['10.0.192.40:9100']
+      - targets: ['54.227.162.130:9100']
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['54.227.162.130:8000']
+  # - job_name: 'docker'
+  #        # metrics_path defaults to '/metrics'
+  #        # scheme defaults to 'http'.
+  #   static_configs:
+  #     # - targets: ['10.0.192.40:9323']
+  #     - targets: ['54.227.162.130:9323']
+  - job_name: 'dockerd-exporter'
+    dns_sd_configs:
+    - names:
+      - 'tasks.dockerd-exporter'
+      type: 'A'
+      port: 9323
+  # - job_name: 'pushgateway'
+  #   scrape_interval: 10s
+  #   honor_labels: true
+  #   static_configs:
+  #     # - targets: ['pushgateway:9091']
+  #     # - targets: ['10.0.192.40:9091']
+  #     - targets: ['54.227.162.130:9091']
 
-# receivers:
-# - name: 'alertmananger-bot'
-#   webhook_configs:
-#   - send_resolved: true
-#     url: 'http://34.237.151.53:8080'
-# - name: 'telegramiconNode'
-#   webhook_configs:
-#   - url: http://34.237.151.53:9165/alert
-#     send_resolved: true
-    
+  # - job_name: 'validator'
+  #    static_configs:
+  #    - targets: ['localhost:80']
 
-# - name: email-me
-#   email_configs:
-#   - to: $GMAIL_ACCOUNT
-#     from: $GMAIL_ACCOUNT
-#     smarthost: smtp.gmail.com:587
-#     auth_username: "$GMAIL_ACCOUNT"
-#     auth_identity: "$GMAIL_ACCOUNT"
-#     auth_password: "$GMAIL_AUTH_TOKEN"
-
-# inhibit_rules:
-#   - source_match:
-#       severity: 'page'
-#     target_match:
-#       severity: 'ticket'
-#     equal: ['team']
+  # sg-0b516a4a2ff12207a
 
 
-
-
-
-
-
-
-
-
-  # group_by:
-  # - alertname
-  # - cluster
-  # - service
-  # group_interval: 5m
-  # group_wait: 30s
-  # receiver: slack
-  # repeat_interval: 3h
-
-
-
-# route:
-#   receiver: 'email_backup'
-#   group_by: ['alertname']
-#   group_wait: 10s
-#   group_interval: 1m
-#   routes:
-#     - match:
-#         severity: 'critical'
-#       group_by: ['team']
-#       receiver: 'email_pager'
-#       routes:
-#         - match:
-#             team: devops
-#             receiver: 'email_devops'
-
-#   receivers:
-#   - name: 'email_backup'
-#     email_configs:
-#       - to: 'dsvpham@gmail.com'
-#   - name: 'email_pager'
-#     email_configs:
-#       - to: 'dsvpham@gmail.com'
-#   - name: 'email_devops'
-#     email_configs:
-#       - to: 'dsvpham@gmail.com'
+  
+        # - targets: ['ip-10-0-192-98.ec2.internal:9093' ]
+  #       - targets: ip-10-0-192-98.ec2.internal:9093
+      # - targets: ['34.237.151.53:9093']
+    # ec2_sd_config:
+    #   - region: us-east-1
+    #     access_key: 'AKIAXOAFTIZTHSINIQUZ'
+    #     secret_key: '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'
+    #     port: 9093
+  # - job_name: 'grafana'
+  #    static_configs:
+  #    - targets: ['34.237.151.53:3000']
